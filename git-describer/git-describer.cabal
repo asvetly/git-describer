@@ -1,6 +1,6 @@
 name:                git-describer
-version:             0.1.0.0
-synopsis:            Initial project template from stack
+version:             0.0.1
+synopsis:            Git-describer telegram bot
 description:         Please see README.md
 homepage:            https://github.com/githubuser/git-describer#readme
 license:             BSD3
@@ -16,8 +16,25 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
+  -- other-modules:
   build-depends:       base >= 4.7 && < 5
+                     , aeson == 1.0.*
+                     , http-api-data
+                     , http-client >= 0.5 && < 0.6
+                     , servant >= 0.9 && <0.10
+                     , servant-client >= 0.9 && <0.10
+                     , mtl >= 2.2 && < 2.3
+                     , text
+                     , transformers
+                     , http-media
+                     , http-types
+                     , mime-types
+                     , bytestring
+                     , string-conversions
+                     , html
   default-language:    Haskell2010
+  ghc-options:         -Wall -fno-warn-name-shadowing -fno-warn-unused-binds
+
 
 executable git-describer-exe
   hs-source-dirs:      app
@@ -33,9 +50,10 @@ test-suite git-describer-test
   main-is:             Spec.hs
   build-depends:       base
                      , git-describer
+                     , tasty
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/git-describer
+  location: https://github.com/ugg0t/git-describer
