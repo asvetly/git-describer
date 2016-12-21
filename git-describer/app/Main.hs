@@ -1,6 +1,8 @@
-module Main where
+{-# LANGUAGE OverloadedStrings #-}
 
-import Lib
+import           Messages
+    
+
 
 main :: IO ()
-main = someFunc
+main = main_loop
