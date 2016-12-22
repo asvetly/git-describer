@@ -3,6 +3,11 @@
 module Main where
 
 import           Messages
+import           Parser
 
 main :: IO ()
-main = main_loop
+main = do
+  -- main_loop
+  -- commands <- getCommands
+  -- print commands
+  print "PISKA"
