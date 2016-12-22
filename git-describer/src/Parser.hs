@@ -9,7 +9,7 @@ import                Text.HandsomeSoup
 import                Network.HTTP.Conduit
 import                Data.ByteString.Lazy as BSLazy (writeFile)
 import                Data.Tree.NTree.TypeDefs
-import                Data.Text hiding (foldr, length, head)
+import                Data.Text hiding (foldr, length, head, filter)
 import                Data.Maybe
 import                Control.Monad
 
@@ -17,6 +17,10 @@ import                Control.Monad
 -- структура для хранения информации о git-команде
 data Command = Command { title, description :: String }
   deriving (Show, Eq)
+
+-- поиск команды по названию
+searchCommand :: String -> [Command] -> Command
+searchCommand title cmds = head $ filter (\(Command t d) -> t == title) cmds
 
 
 rootURL  = "https://git-scm.com"

@@ -7,7 +7,7 @@ import           Parser
 
 main :: IO ()
 main = do
-  -- main_loop
+  main_loop
   -- commands <- getCommands
   -- print commands
   print "PISKA"
