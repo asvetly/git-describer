@@ -15,8 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Messages
-                     , Parser
+  exposed-modules:     Parser
+                     , Messages
   -- other-modules:
   build-depends:       base >= 4.7 && < 5
                      , aeson == 1.0.*

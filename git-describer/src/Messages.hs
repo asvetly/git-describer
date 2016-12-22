@@ -1,5 +1,7 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Messages
-    ( 
+    (
       token,
       size,
       main_loop,
@@ -10,9 +12,6 @@ module Messages
       sendMsg,
       get_chat_id
     ) where
-    
-
-{-# LANGUAGE OverloadedStrings #-}
 
 import           Network.HTTP.Client      (newManager)
 import           Network.HTTP.Client.TLS  (tlsManagerSettings)
@@ -20,20 +19,24 @@ import           Web.Telegram.API.Bot
 import           Web.Telegram.API.Bot.Responses
 import           Data.Text
 import           Data.List as List
+import           Parser
 
 token :: Token
-token = Token $ pack "bot281687116:AAHGdr5AP7_96pE-75_UoQLILZqGRzMeUkg" 
+token = Token $ pack "bot281687116:AAHGdr5AP7_96pE-75_UoQLILZqGRzMeUkg"
 
 size :: Maybe Int
 size = Just 20
 
 main_loop :: IO()
-main_loop = do 
-    getMsg Nothing
-    main_loop
+main_loop = do
+  commands <- getCommands
+  main_loop' commands where
+    main_loop' cmds = do
+      getMsg Nothing cmds
+      main_loop' cmds
 
-getMsg :: Maybe Int -> IO()
-getMsg id = do
+getMsg :: Maybe Int -> [Command] -> IO()
+getMsg id cmds = do
   manager <- newManager tlsManagerSettings
   res <- getUpdates token id size Nothing manager
   case res of
@@ -41,7 +44,7 @@ getMsg id = do
       putStrLn "Request failed"
       print e
     Right (Response m) -> do
-      getMsgFunction m
+      getMsgFunction m cmds
 
 sendMsg :: Text -> Text -> IO()
 sendMsg message chatId = do
@@ -52,30 +55,34 @@ sendMsg message chatId = do
     Left e -> do
       putStrLn "Request failed"
       print e
-    Right (Response m) -> do putStrLn "Message sent"    
-    
-    
-getMsgFunction :: [Update] -> IO ()      
-getMsgFunction [] = do putStr ""
-getMsgFunction m = do 
-    processing m
-    getMsg (Just((get_update_id m)+1))
+    Right (Response m) -> do putStrLn "Message sent"
 
 
-processing :: [Update] -> IO ()
-processing [] = putStr ""
-processing (x:xs)= do 
-    sendMsg (get_text x) (get_chat_id x)
-    processing xs
-    
-get_update_id :: [Update] -> Int     
-get_update_id m = update_id (List.last m) 
+getMsgFunction :: [Update] -> [Command] -> IO ()
+getMsgFunction [] _   = do putStr ""
+getMsgFunction m cmds = do
+    processing m cmds
+    getMsg (Just ((get_update_id m) + 1)) cmds
+
+
+processing :: [Update] -> [Command] -> IO ()
+processing [] _        = putStr ""
+processing (x:xs) cmds = do
+    sendMsg msg (get_chat_id x)
+    processing xs cmds
+    where
+      msg = case (descByTitle (unpack $ get_text x) cmds) of
+        Just desc -> pack $ desc
+        otherwise -> "Error 404: command not found"
+
+get_update_id :: [Update] -> Int
+get_update_id m = update_id (List.last m)
 
 get_text :: Update -> Text
 get_text x = get_text' (message x)
     where get_text' (Just mess) = get_text'' (text mess)
-          get_text'' (Just x) = x  
+          get_text'' (Just x) = x
 
 get_chat_id :: Update -> Text
 get_chat_id x = get_chat_id' (message x)
-    where get_chat_id' (Just mess) = pack $ show $ chat_id (chat mess)          
+    where get_chat_id' (Just mess) = pack $ show $ chat_id (chat mess)

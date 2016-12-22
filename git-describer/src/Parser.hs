@@ -1,6 +1,13 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction, OverloadedStrings, LambdaCase #-}
 module Parser
-    (getCommands, isValidPage, htmlToFile, getNextLink, getCommand, parseComands
+    (getCommands,
+    isValidPage,
+    htmlToFile,
+    getNextLink,
+    getCommand,
+    parseComands,
+    Command,
+    descByTitle
     ) where
 
 
@@ -19,8 +26,12 @@ data Command = Command { title, description :: String }
   deriving (Show, Eq)
 
 -- поиск команды по названию
-searchCommand :: String -> [Command] -> Command
-searchCommand title cmds = head $ filter (\(Command t d) -> t == title) cmds
+descByTitle :: String -> [Command] -> Maybe String
+descByTitle title cmds = case filteredCmds of
+                           [] -> Nothing
+                           otherwise -> Just . description . head $ filteredCmds
+                         where
+                            filteredCmds = filter (\(Command t d) -> t == title) cmds
 
 
 rootURL  = "https://git-scm.com"
