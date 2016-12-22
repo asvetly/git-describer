@@ -6,9 +6,9 @@ module Messages
       size,
       main_loop,
       getMsg,
-      getMsgFunction,
-      get_text,
       sendMsg,
+      getMsgFunction,
+      processing_updates,
       get_chat_id
     ) where
 
