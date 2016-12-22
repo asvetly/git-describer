@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Messages
-    
+module Main where
 
+import           Messages
 
 main :: IO ()
 main = main_loop
