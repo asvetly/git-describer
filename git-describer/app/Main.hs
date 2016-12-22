@@ -6,8 +6,7 @@ import           Messages
 import           Parser
 
 main :: IO ()
-main = do
-  main_loop
-  -- commands <- getCommands
-  -- print commands
-  print "PISKA"
+main =  do
+   commands <- getCommands
+   putStrLn  "All commands read"
+   main_loop commands

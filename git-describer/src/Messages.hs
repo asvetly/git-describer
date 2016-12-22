@@ -27,13 +27,10 @@ token = Token $ pack "bot281687116:AAHGdr5AP7_96pE-75_UoQLILZqGRzMeUkg"
 size :: Maybe Int
 size = Just 20
 
-main_loop :: IO()
-main_loop = do
-  commands <- getCommands
-  main_loop' commands where
-    main_loop' cmds = do
-      getMsg Nothing cmds
-      main_loop' cmds
+main_loop :: [Command] -> IO()
+main_loop cmds = do
+   getMsg Nothing cmds
+   main_loop cmds    
 
 getMsg :: Maybe Int -> [Command] -> IO()
 getMsg id cmds = do
