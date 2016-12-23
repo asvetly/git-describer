@@ -18,13 +18,13 @@ library
   exposed-modules:     Parser
                      , Messages
                      , Processing
+                     , DB
   -- other-modules:
   build-depends:       base >= 4.7 && < 5
+                     , http-api-data
+                     , http-client >= 0.5 && < 0.6
                      , text
                      , transformers
-                     , http-media
-                     , http-types
-                     , mime-types
                      , bytestring
                      , string-conversions
                      , html
@@ -33,6 +33,8 @@ library
                      , HandsomeSoup >= 0.4.2
                      , hxt >= 9.3.1.16
                      , http-conduit >= 2.2.3
+                     , HDBC
+                     , HDBC-sqlite3
   default-language:    Haskell2010
   ghc-options:         -Wall -fno-warn-name-shadowing -fno-warn-unused-binds
 
@@ -59,6 +61,8 @@ executable git-describer-exe
                      , html
                      , telegram-api
                      , git-describer
+                     , HDBC
+                     , HDBC-sqlite3
   default-language:    Haskell2010
 
 test-suite git-describer-test
