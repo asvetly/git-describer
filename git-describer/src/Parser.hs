@@ -1,4 +1,8 @@
-{-# LANGUAGE Arrows, NoMonomorphismRestriction, OverloadedStrings, LambdaCase #-}
+{-# LANGUAGE Arrows                    #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE LambdaCase                #-}
+
 module Parser
     (getCommands,
     isValidPage,
@@ -6,7 +10,7 @@ module Parser
     getNextLink,
     getCommand,
     parseComands,
-    Command,
+    Command(Command),
     descByTitle
     ) where
 

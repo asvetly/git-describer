@@ -13,13 +13,16 @@ module Messages
       get_chat_id
     ) where
 
-import           Network.HTTP.Client      (newManager)
-import           Network.HTTP.Client.TLS  (tlsManagerSettings)
-import           Web.Telegram.API.Bot
-import           Web.Telegram.API.Bot.Responses
-import           Data.Text
-import           Data.List as List
-import           Parser
+import                Network.HTTP.Client      (newManager)
+import                Network.HTTP.Client.TLS  (tlsManagerSettings)
+import                Web.Telegram.API.Bot
+import                Web.Telegram.API.Bot.Responses
+import                Database.HDBC
+import                Database.HDBC.Sqlite3
+import                Data.Text
+import                Data.List as List
+import                Parser
+import                DB
 
 
 token :: Token
@@ -30,19 +33,19 @@ size :: Maybe Int
 size = Just 20
 
 
-main_loop :: [Command] -> IO()
-main_loop cmds = do
-  getMsg Nothing cmds
-  main_loop cmds
+main_loop :: Connection -> IO()
+main_loop conn = do
+  getMsg Nothing conn
+  main_loop conn
 
 
-getMsg :: Maybe Int -> [Command] -> IO()
-getMsg id cmds = do
+getMsg :: Maybe Int -> Connection -> IO()
+getMsg id conn = do
   manager <- newManager tlsManagerSettings
   res     <- getUpdates token id size Nothing manager
   case res of
       Left e             -> putStrLn "Request failed" >> print e
-      Right (Response m) ->  getMsgFunction m cmds
+      Right (Response m) ->  getMsgFunction m conn
 
 
 sendMsg :: Text -> Text -> IO()
@@ -55,20 +58,21 @@ sendMsg message chatId = do
       Right (Response m) -> putStrLn "Message sent"
 
 
-getMsgFunction :: [Update] -> [Command] -> IO ()
+getMsgFunction :: [Update] -> Connection -> IO ()
 getMsgFunction [] _   = do putStr ""
-getMsgFunction m cmds = do
-    processing m cmds
-    getMsg (Just ((get_update_id m) + 1)) cmds
+getMsgFunction m conn = do
+    processing m conn
+    getMsg (Just ((get_update_id m) + 1)) conn
 
 
-processing :: [Update] -> [Command] -> IO ()
+processing :: [Update] -> Connection -> IO ()
 processing [] _        = putStr ""
-processing (x:xs) cmds = do
-    sendMsg msg (get_chat_id x)
-    processing xs cmds
+processing (x:xs) conn = do
+    descIO <- findDesctiption conn (unpack . toLower . get_text $ x)
+    sendMsg (msg descIO)(get_chat_id x)
+    processing xs conn
     where
-      msg = case (descByTitle (unpack $ toLower $ get_text x) cmds) of
+      msg dM = case dM of
         Just desc -> pack $ desc
         otherwise -> "Error 404: command not found"
 
